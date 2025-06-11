@@ -9,6 +9,7 @@ import { TodoModal } from './components/TodoModal';
 import { Loader } from './components/Loader';
 import { Todo } from './types/Todo';
 import { User } from './types/User';
+import { getTodos, getUsers } from './api';
 
 type StatusFilter = 'all' | 'active' | 'completed';
 
@@ -38,14 +39,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     setIsLoading(true);
 
-    Promise.all([
-      fetch('https://jsonplaceholder.typicode.com/todos').then(res =>
-        res.json(),
-      ),
-      fetch('https://jsonplaceholder.typicode.com/users/').then(res =>
-        res.json(),
-      ),
-    ])
+    Promise.all([getTodos(), getUsers()])
       .then(([todosFromServer, usersFromServer]) => {
         setTodos(todosFromServer);
         setUsers(usersFromServer);
