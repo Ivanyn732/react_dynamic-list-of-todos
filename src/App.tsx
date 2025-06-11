@@ -8,8 +8,7 @@ import { TodoFilter } from './components/TodoFilter';
 import { TodoModal } from './components/TodoModal';
 import { Loader } from './components/Loader';
 import { Todo } from './types/Todo';
-import { User } from './types/User';
-import { getTodos, getUsers } from './api';
+import { getTodos } from './api';
 
 type StatusFilter = 'all' | 'active' | 'completed';
 
@@ -20,7 +19,6 @@ export const App: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
   const [selectedTodoId, setSelectedTodoId] = useState<number | null>(null);
-  const [users, setUsers] = useState<User[]>([]);
   const [isLoadingModal, setIsLoadingModal] = useState(false);
 
   const visibleTodos = todos.filter(todo => {
@@ -39,16 +37,10 @@ export const App: React.FC = () => {
   useEffect(() => {
     setIsLoading(true);
 
-    Promise.all([getTodos(), getUsers()])
-      .then(([todosFromServer, usersFromServer]) => {
-        setTodos(todosFromServer);
-        setUsers(usersFromServer);
-      })
+    getTodos()
+      .then(setTodos)
       .finally(() => setIsLoading(false));
   }, []);
-
-  const selectedUser =
-    users.find(user => user.id === selectedTodo?.userId) || null;
 
   return (
     <>
@@ -102,7 +94,6 @@ export const App: React.FC = () => {
             setSelectedTodoId(null);
             setIsLoadingModal(false);
           }}
-          user={selectedUser}
         />
       ) : null}
     </>
